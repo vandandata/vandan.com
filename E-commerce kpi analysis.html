@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-commerce KPI Analysis Using DAX in Power BI</title>
+    <style>
+        /* Reset and base styles */
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            color: #0c0e0f;
+            background-color: #f4f4f4;
+        }
+
+        /* Header and Navigation Styling */
+        header {
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 2rem;
+            padding: 0;
+            margin: 0;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+        }
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-outline {
+            border: 2px solid #007bff;
+            color: #007bff;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+        }
+
+        /* Main Content Styling */
+        main {
+            width: 80%;
+            margin: 20px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        pre {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+
+        /* Footer Styling */
+        footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        /* Additional link styling */
+        main a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+
+        main a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Vandan</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="resume.html">Resume</a></li>
+            </ul>
+        </nav>
+        <div class="cta-buttons">
+            <a href="#" class="btn btn-outline">Get Started</a>
+            <a href="https://www.linkedin.com/in/dan-nguyen-317642215/" class="btn btn-primary">Contact Me</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="introduction">
+            <h2>Project Introduction: E-commerce KPI Analysis Using DAX in Power BI</h2>
+            <h3>Overview</h3>
+            <p>In the competitive world of e-commerce, understanding key performance indicators (KPIs) is essential for driving business success. My project, "E-commerce KPI Analysis," leverages Power BI and DAX (Data Analysis Expressions) to provide insightful visualizations and analyses that empower stakeholders to make informed decisions. Below, I detail the DAX functions used and their significance in the context of business analytics.</p>
+        </section>
+
+        <section id="dax-functions">
+            <h3>DAX Functions and Their Purpose</h3>
+
+            <article>
+                <h4>1. BestSellingProductsPerCity</h4>
+                <pre><code>
+BestSellingProductsPerCity =  
+ADDCOLUMNS( 
+    SUMMARIZE( 
+        'data', 
+        'data'[State], 
+        'data'[Category], 
+        "TotalSales", SUM('data'[Sales]) 
+    ), 
+    "Rank",  
+    RANKX( 
+        FILTER( 
+            SUMMARIZE( 
+                'data', 
+                'data'[State], 
+                'data'[Category], 
+                "TotalSales", SUM('data'[Sales]) 
+            ), 
+            'data'[State] = EARLIER('data'[State]) 
+        ), 
+        [TotalSales],, 
+        DESC 
+    )
+)
+                </code></pre>
+                <p><strong>Purpose and Significance:</strong> The <code>BestSellingProductsPerCity</code> function identifies the top-selling products in each city by category. By ranking products based on total sales within each state, this function provides a granular view of product performance across different regions. This visualization helps stakeholders understand regional preferences, enabling targeted marketing strategies and inventory management.</p>
+            </article>
+
+            <article>
+                <h4>2. Top10SellingCategoryTable</h4>
+                <pre><code>
+Top10SellingCategoryTable =  
+TOPN( 
+    10,  
+    SUMMARIZE( 
+        data,  
+        data[Category],  
+        "TotalSales", SUM(data[Sales]) 
+    ),  
+    [TotalSales],  
+    DESC 
+)
+                </code></pre>
+                <p><strong>Purpose and Significance:</strong> The <code>Top10SellingCategoryTable</code> function extracts the top 10 selling categories based on total sales. This visualization highlights the most profitable product categories, allowing stakeholders to focus on high-performing areas and optimize product offerings. It provides a clear picture of consumer demand trends, aiding in strategic planning and resource allocation.</p>
+            </article>
+
+            <article>
+                <h4>3. Top10SellingProductsTable</h4>
+                <pre><code>
+Top10SellingProductsTable =  
+TOPN( 
+    10,  
+    SUMMARIZE( 
+        data,  
+        data[Product],  
+        "TotalSales", SUM(data[Sales]) 
+    ),  
+    [TotalSales],  
+    DESC 
+)
+                </code></pre>
+                <p><strong>Purpose and Significance:</strong> Similar to the category analysis, the <code>Top10SellingProductsTable</code> function identifies the top 10 selling products. This visualization offers insights into specific product popularity, helping stakeholders make informed decisions about product promotions, pricing strategies, and inventory levels.</p>
+            </article>
+
+            <article>
+                <h4>4. TotalProfitByYear</h4>
+                <pre><code>
+TotalProfitByYear =  
+SUMMARIZE( 
+    data, 
+    data[Order Date], 
+    "Year", YEAR(data[Order Date]), 
+    "TotalProfit", SUM(data[Profit]) 
+)
+                </code></pre>
+                <p><strong>Purpose and Significance:</strong> The <code>TotalProfitByYear</code> function aggregates profit data on an annual basis. By visualizing profit trends over time, stakeholders can assess the financial health of the business and identify growth patterns or areas of concern. This analysis supports long-term strategic planning and financial forecasting.</p>
+            </article>
+        </section>
+
+        <section id="conclusion">
+            <h3>Conclusion</h3>
+            <p>The DAX functions used in this project provide a comprehensive view of e-commerce performance, offering valuable insights into product sales, regional preferences, and financial trends. By visualizing these KPIs in Power BI, stakeholders can make data-driven decisions that enhance business operations and drive growth. This project demonstrates my ability to harness advanced analytics tools to deliver actionable business intelligence.</p>
+        </section>
+
+        <video width="1000" height="400" controls>
+            <source src="Screen Recording 2024-10-14 003224.mp4" type="video/mp4">   
+            Your browser does not support the video tag.
+        </video>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Vandan. All rights reserved.</p>
+    </footer>
+</body>
+</html>

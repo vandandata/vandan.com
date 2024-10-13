@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coffee Chain Sales Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background-color: #f7f8f8;
+            color: #f8f5f5;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            display: flex;
+        }
+        nav ul li {
+            margin-right: 20px;
+        }
+        nav ul li a {
+            color: #080808;
+            text-decoration: none;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .btn {
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .btn-outline {
+            border: 1px solid #f7f9fb;
+            color: #f7f9fb;
+        }
+        .btn-primary {
+            background-color: #e8ecf0;
+            color: #16c2f2;
+            border: none;
+        }
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+        }
+        .section {
+            background-color: #fff;
+            margin-bottom: 20px;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        h2, h3 {
+            color: #333;
+        }
+        pre {
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        .analysis-explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e6f3ff;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">Vandan</div>
+        <nav>
+            <ul>
+                <li><a href="index.html">Projects</a></li>
+                <li><a href="resume.html">Resume</a></li>
+            </ul>
+        </nav>
+        <div class="buttons">
+            <a href="#" class="btn btn-outline">Get Started</a>
+            <a href="https://www.linkedin.com/in/dan-nguyen-317642215/" class="btn btn-primary">Contact Me</a>
+        </div>
+    </header>
+    <div class="container">
+        <section id="projects" class="section">
+            <h2>Project: Coffee Chain Sales Analysis</h2>
+            <p>This project demonstrates my ability to use SQL for complex data analysis and derive meaningful business intelligence.</p>
+            
+            <h3>Business Context</h3>
+            <p>Our coffee chain has been expanding rapidly, and management needed a comprehensive understanding of our sales performance across different locations, products, and time periods. The goals of this analysis were to:</p>
+            <ul>
+                <li>Identify sales trends to optimize inventory and staffing</li>
+                <li>Understand which products and categories drive the most revenue</li>
+                <li>Evaluate store performance to inform future expansion decisions</li>
+                <li>Categorize products based on their sales performance for targeted marketing</li>
+            </ul>
+
+            <h3>Data Preparation</h3>
+            <pre>
+ALTER TABLE coffee_brand.coffee_shop_sales ADD COLUMN transaction_day DATE;
+UPDATE coffee_brand.coffee_shop_sales 
+SET transaction_date = STR_TO_DATE(transaction_date, '%m/%d/%Y');
+ALTER TABLE coffee_brand.coffee_shop_sales
+MODIFY COLUMN transaction_date DATE;
+
+UPDATE coffee_brand.coffee_shop_sales
+SET transaction_time = STR_TO_DATE(transaction_time, '%H:%i:%s');
+ALTER TABLE coffee_brand.coffee_shop_sales
+MODIFY COLUMN transaction_time TIME;
+            </pre>
+            <div class="analysis-explanation">
+                <p>To ensure accurate time-based analysis, I prepared the data by:</p>
+                <ul>
+                    <li>Adding a new column for transaction day</li>
+                    <li>Converting string dates to proper DATE format</li>
+                    <li>Converting string times to proper TIME format</li>
+                </ul>
+                <p>This standardization allows for more precise temporal analysis and easier querying of time-based data.</p>
+            </div>
+            <h3>1. Daily, Weekly, and Monthly Sales Trends</h3>
+            <pre>
+SELECT 
+    DATE_FORMAT(transaction_date, '%Y-%m') AS Month, 
+    ROUND(SUM(unit_price * transaction_qty),1) AS total_sales
+FROM 
+    coffee_brand.coffee_shop_sales
+GROUP BY 
+    DATE_FORMAT(transaction_date, '%Y-%m');
+            </pre>
+            <div class="analysis-explanation">
+                <p>This query analyzes monthly sales trends by:</p>
+                <ul>
+                    <li>Grouping transactions by month</li>
+                    <li>Calculating total sales for each month</li>
+                </ul>
+                <p>This information helps identify seasonal patterns and overall sales performance over time.</p>
+            </div>
+
+            <h3>2. Average Transaction Value by Store Location</h3>
+            <pre>
+SELECT ROUND(AVG(transaction_qty*unit_price),2) as avg_of_a_transaction, store_location
+ FROM  coffee_brand.coffee_shop_sales
+GROUP BY store_location;
+            </pre>
+            <div class="analysis-explanation">
+                <p>This analysis calculates the average transaction value for each store location, helping to:</p>
+                <ul>
+                    <li>Identify high-performing locations</li>
+                    <li>Understand customer spending patterns across different stores</li>
+                </ul>
+            </div>
+
+            <h3>3. Top Contributing Product Categories and Types</h3>
+            <pre>
+SELECT product_category, product_type, ROUND(SUM(transaction_qty* unit_price),2) AS total_sales
+FROM   coffee_brand.coffee_shop_sales
+GROUP BY product_category, product_type
+ORDER BY  product_type ASC
+LIMIT 10;
+            </pre>
+            <div class="analysis-explanation">
+                <p>This query identifies the top-selling product categories and types by:</p>
+                <ul>
+                    <li>Calculating total sales for each product category and type</li>
+                    <li>Ordering results to show top performers</li>
+                </ul>
+                <p>This information is crucial for inventory management and marketing strategies.</p>
+            </div>
+
+            <h3>4. Revenue and Quantity Sold by Product Category</h3>
+            <pre>
+SELECT ROUND(SUM(transaction_qty*unit_price),2) AS revenue,
+       SUM(transaction_qty) AS quantity_sold, product_category
+ FROM  coffee_brand.coffee_shop_sales
+ GROUP BY product_category;
+            </pre>
+            <div class="analysis-explanation">
+                <p>This analysis provides insights into each product category's performance by:</p>
+                <ul>
+                    <li>Calculating total revenue and quantity sold for each category</li>
+                </ul>
+                <p>This helps in understanding which categories are driving sales and which might need attention.</p>
+            </div>
+
+            <h3>5. Product Sales Status</h3>
+            <pre>
+WITH sales_data AS (
+    SELECT 
+        product_type,
+        SUM(transaction_qty) AS total_quantity_sold,
+        AVG(SUM(transaction_qty)) OVER () AS avg_quantity_sold
+    FROM 
+        coffee_brand.coffee_shop_sales
+    GROUP BY 
+        product_type
+)
+SELECT 
+    product_type,
+    total_quantity_sold,
+    avg_quantity_sold,
+    CASE 
+        WHEN total_quantity_sold > avg_quantity_sold THEN 'Above Average'
+        WHEN total_quantity_sold < avg_quantity_sold THEN 'Below Average'
+        ELSE 'Average'
+    END AS product_status
+FROM 
+    sales_data;
+            </pre>
+            <div class="analysis-explanation">
+                <p>This advanced query categorizes products based on their sales performance:</p>
+                <ul>
+                    <li>Calculates total quantity sold for each product type</li>
+                    <li>Compares each product's sales to the overall average</li>
+                    <li>Assigns a status (Above Average, Below Average, or Average) to each product</li>
+                </ul>
+                <p>This analysis helps identify star products and those that might need marketing or quality improvements.</p>
+            </div>
+        </section>
+    </div>
+</body>
+</html>
